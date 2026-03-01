@@ -11,7 +11,7 @@ def ui():
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>AI理解保証システム - Never Get Lost</title>
+    <title>AI理解保証システム - Intelligent Edition</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script>
         window.MathJax = {
@@ -23,6 +23,7 @@ def ui():
     <style>
         :root { 
             --accent: #00d2ff; 
+            --ai-color: #a29bfe;
             --warning: #f7b731;
             --border: rgba(255, 255, 255, 0.1); 
             --panel-bg: rgba(255, 255, 255, 0.05);
@@ -48,12 +49,13 @@ def ui():
         .unit-card { background: rgba(255,255,255,0.03); padding: 18px; border-radius: 15px; margin-bottom: 10px; cursor: pointer; border: 1px solid var(--border); transition: 0.3s; }
         .unit-card:hover { border-color: var(--accent); background: rgba(255,255,255,0.08); }
 
-        /* ビジュアル・セクション */
-        .visual-box { background: rgba(255,255,255,0.02); border-radius: 15px; padding: 20px; margin: 15px 0; border: 1px solid var(--border); line-height: 1.6; }
+        /* AI・ビジュアル要素 */
+        .visual-box { background: rgba(255,255,255,0.02); border-radius: 15px; padding: 20px; margin: 15px 0; border: 1px solid var(--border); }
         .section-title { color: var(--accent); border-bottom: 1px solid var(--accent); margin-top: 25px; padding-bottom: 5px; font-weight: bold; }
-        .review-box { background: rgba(247, 183, 49, 0.05); border-left: 4px solid var(--warning); padding: 15px; margin: 20px 0; color: var(--warning); font-size: 0.9em; }
-        
-        .btn-primary { width: 100%; padding: 18px; border-radius: 15px; background: #fff; color: #000; font-weight: 900; border: none; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        .ai-box { background: rgba(162, 155, 254, 0.1); border: 1px solid var(--ai-color); border-radius: 15px; padding: 20px; margin-top: 20px; position: relative; }
+        .ai-badge { position: absolute; top: -10px; left: 20px; background: var(--ai-color); color: #000; padding: 2px 10px; border-radius: 5px; font-size: 0.7em; font-weight: bold; }
+
+        .btn-primary { width: 100%; padding: 18px; border-radius: 15px; background: #fff; color: #000; font-weight: 900; border: none; cursor: pointer; margin-top: 20px; }
         .input-field { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff; margin-bottom: 10px; box-sizing: border-box; outline: none; }
         
         .layer { display: none; } .layer.show { display: block; }
@@ -64,8 +66,8 @@ def ui():
     <div class="liquid-bg"></div>
     <div id="login-screen">
         <div class="login-glass">
-            <h2>AI Study Link</h2>
-            <p style="font-size: 0.8em; opacity: 0.6; margin-bottom:20px;">すみれさんのための学習ルーム</p>
+            <h2 style="color:var(--accent);">AI Study Link</h2>
+            <p style="font-size: 0.8em; opacity: 0.6; margin-bottom:20px;">すみれさんの理解度をAIが学習中</p>
             <input type="email" class="input-field" placeholder="Email">
             <input type="password" class="input-field" placeholder="Password">
             <button class="btn-primary" onclick="launch()">学習を開始</button>
@@ -76,22 +78,31 @@ def ui():
         <div class="page-panel">
             <div id="left-home" class="layer show">
                 <h1 style="font-size:2.5em; margin: 0;">Hi, すみれ!</h1>
-                <p style="opacity:0.7;">右のリストから単元を選んでね。</p>
-                <div id="ai-status" style="margin-top:30px; padding:20px; background:rgba(0,210,255,0.1); border-radius:15px; border:1px solid var(--accent);">
-                    🤖 <b>AI分析エンジン起動中:</b><br>
-                    <span id="ai-msg">学習を開始すると、あなたの苦手な傾向を分析してここに表示します。</span>
+                <p style="opacity:0.7;">今日の学習状況をAIが分析しています。</p>
+                
+                <div class="ai-box">
+                    <div class="ai-badge">AI ANALYSIS</div>
+                    <div id="ai-insight">
+                        「分析を開始します。右から単元を選んでね。すみれさんの解き方のクセを見抜くよ！」
+                    </div>
+                </div>
+
+                <div class="section-title">📊 習得スコア</div>
+                <div id="mastery-list" style="margin-top:10px; font-size:0.9em;">
+                    まだデータがありません。
                 </div>
             </div>
+            
             <div id="left-lesson" class="layer">
                 <button onclick="goHome()" style="background:none; border:none; color:var(--accent); cursor:pointer;">← 戻る</button>
-                <h2 id="lesson-title" style="margin: 10px 0;"></h2>
-                <div class="section-title">🧭 イメージ解説</div>
+                <h2 id="lesson-title"></h2>
+                <div class="section-title">🧭 イメージで理解</div>
                 <div id="visual-content"></div>
-                <div class="section-title">📘 大事なルール</div>
+                <div class="section-title">📘 公式・ルール</div>
                 <div id="lesson-desc"></div>
                 <div id="review-section" class="hidden">
-                    <div class="section-title">🔄 復習アドバイス</div>
-                    <div id="lesson-review" class="review-box"></div>
+                    <div class="section-title">🔄 AI復習講義</div>
+                    <div id="lesson-review" style="background:rgba(247,183,49,0.1); padding:15px; border-radius:10px; color:var(--warning);"></div>
                 </div>
             </div>
         </div>
@@ -108,37 +119,35 @@ def ui():
             <div id="right-practice" class="layer">
                 <div class="section-title">✍️ 演習問題</div>
                 <div id="practice-body"></div>
-                <button id="check-btn" class="btn-primary" onclick="checkPractice()">答えを判定</button>
+                <button id="check-btn" class="btn-primary" onclick="checkPractice()">AI判定を受ける</button>
+                
                 <div id="ruidai-section" class="hidden">
                     <div class="section-title">🔥 仕上げの類題</div>
                     <div id="ruidai-body"></div>
-                    <button class="btn-primary" onclick="checkFinal()">完了！</button>
+                    <button class="btn-primary" onclick="checkFinal()">完了して記録する</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let stats = { totalMistakes: 0, sessionMistakes: 0, weakUnits: [] };
+        // AI学習用データ
+        let aiBrain = {
+            mistakeLogs: {}, // 単元ごとのミス記録
+            mastery: {},     // 習得度 0-100
+            totalSessions: 0
+        };
 
         const mathData = {
             1: [
-                { id:'1-1', title:"正の数・負の数", visual:"<div class='visual-box'><b>【数直線のイメージ】</b><br>0より右がプラス（増える）、左がマイナス（減る）。<br>$-7+3$ は「左に7歩行ってから、右に3歩戻る」ということ！</div>", desc:"マイナス同士の掛け算は「逆の逆」だからプラスになるよ！", q:{t:"$(-5) + 8$", a:"3", h:"右に8歩進む力が勝つよ！"}, review:"異符号の足し算は、絶対値が大きい方の符号を優先しましょう。", ruidai:{t:"$(-10) + 4$", a:"-6"} },
-                { id:'1-2', title:"文字の式", visual:"<div class='visual-box'><b>【りんごの箱詰め】</b><br>$x$はりんご1個の値段。$3x$はりんご3個。中身がわからないものを文字でおくんだ！</div>", desc:"$a \\\\times b$ は $ab$ と書くのがルール。数字は文字の前に書こう。", q:{t:"$2a + 4a$", a:"6a", h:"りんご2個＋りんご4個＝？"}, review:"文字が同じなら、数字（係数）の部分だけ計算すればOK！", ruidai:{t:"$7x - 3x$", a:"4x"} },
-                { id:'1-3', title:"方程式", visual:"<div class='visual-box'><b>【天秤のルール】</b><br>右と左が釣り合っています。片方に何かをしたら、もう片方にも同じことをしないとダメ！</div>", desc:"＝をまたぐときは符号が入れ替わる「移項」を使おう。", q:{t:"$x + 6 = 15$", a:"9", h:"両方の皿から6を引いてみよう。"}, review:"$x = ...$ の形にするのがゴールだよ。", ruidai:{t:"$x - 4 = 10$", a:"14"} },
-                { id:'1-4', title:"比例と反比例", visual:"<div class='visual-box'><b>【グラフの形】</b><br>比例はまっすぐな直線。反比例はなめらかなカーブ（双曲線）になるよ。</div>", desc:"比例は $y=ax$。 $a$ は決まった数字（比例定数）だよ。", q:{t:"$y=2x$ で $x=5$ の時の $y$", a:"10", h:"$2 \\\\times 5$ を計算！"}, review:"片方が2倍、3倍になると、もう片方も2倍、3倍になるのが比例。", ruidai:{t:"$y=4x$ で $x=3$ の時の $y$", a:"12"} }
+                { id:'1-1', title:"正の数・負の数", visual:"<div class='visual-box'><b>数直線イメージ</b><br><br>マイナスを掛ける＝「逆を向く」と覚えよう！</div>", desc:"$(- ) \\\\times (- ) = +$ は、反対の反対は正面！という意味だよ。", q:{t:"$(-3) \\\\times (-4)$", a:"12", type:"sign_check"}, review:"正解！マイナスの掛け算は『逆を向いてから逆へ進む』からプラスになるんだね。", ruidai:{t:"$(-2) \\\\times (-3) \\\\times (-2)$", a:"-12"} },
+                { id:'1-3', title:"方程式", visual:"<div class='visual-box'><b>天秤イメージ</b><br><br>＝は天秤。左から2引いたら、右からも2引く！</div>", desc:"移項（＝をまたぐ）ときは、符号をひっくり返そう。", q:{t:"$x + 8 = 3$", a:"-5", type:"transition_check"}, review:"移項したあとの計算もバッチリだね。$x = 3 - 8$ の形を作れたかな？", ruidai:{t:"$x + 12 = 4$", a:"-8"} }
             ],
             2: [
-                { id:'2-1', title:"式の計算", visual:"<div class='visual-box'><b>【分配法則】</b><br>外にある数字を、かっこ内の全員に平等に配る（掛ける）イメージ。</div>", desc:"$2(a+b) = 2a+2b$ になるよ。マイナスがついている時は符号に注意！", q:{t:"$3(x - 4)$ を展開せよ", a:"3x-12", h:"3をxと-4の両方に掛けて。"}, review:"かっこを外した後の符号ミスが一番多いから気をつけて！", ruidai:{t:"$2(a + 5)$", a:"2a+10"} },
-                { id:'2-2', title:"連立方程式", visual:"<div class='visual-box'><b>【犯人探し】</b><br>2つのヒントから、$x$と$y$という2人の正体を突き止めるゲームだよ。</div>", desc:"加減法（足し引きして文字を消す）か代入法を使おう。", q:{t:"$x+y=5, x=2$ のとき $y$ は？", a:"3", h:"$2+y=5$ を解くだけ！"}, review:"片方の文字がわかれば、もう片方はすぐに見つかるよ。", ruidai:{t:"$x+y=10, y=4$ のとき $x$ は？", a:"6"} },
-                { id:'2-3', title:"一次関数", visual:"<div class='visual-box'><b>【坂道の傾き】</b><br>$y=ax+b$ の $a$ は坂の急さ（傾き）、$b$ はスタート地点（切片）だよ。</div>", desc:"$x$ が1増えた時に $y$ がどれだけ増えるかが $a$。グラフを描くとわかりやすい！", q:{t:"傾き3、切片5の式は？", a:"y=3x+5", h:"そのまま $ax+b$ に当てはめて。"}, review:"切片 $b$ は $x=0$ の時の $y$ の値のことだよ。", ruidai:{t:"傾き2、切片-3の式は？", a:"y=2x-3"} },
-                { id:'2-4', title:"図形の性質", visual:"<div class='visual-box'><b>【三角形の秘密】</b><br>どんな三角形も、3つの角を全部合わせると $180^\\\\circ$ になる！</div>", desc:"平行線の錯角や同位角が等しいこともよく使うよ。", q:{t:"2角が40, 60の三角形の残りの角は？", a:"80", h:"$180 - (40+60)$"}, review:"外角の性質も覚えると、計算がぐっと楽になるよ。", ruidai:{t:"2角が50, 50の三角形の残りの角は？", a:"80"} }
+                { id:'2-1', title:"連立方程式", visual:"<div class='visual-box'><b>犯人特定イメージ</b><br>2つのヒントから共通の犯人（xとy）を絞り込むよ。</div>", desc:"加減法で、まずは片方の文字を消去しよう！", q:{t:"$x+y=10, x-y=2$ の $x$ は？", a:"6", type:"elimination_check"}, review:"文字を消す感覚、掴めてきたね！", ruidai:{t:"$x+y=8, x-y=2$ の $x$ は？", a:"5"} }
             ],
             3: [
-                { id:'3-1', title:"展開と因数分解", visual:"<div class='visual-box'><b>【パズル】</b><br>展開は「バラバラにする」、因数分解は「箱にまとめる」作業だよ。</div>", desc:"公式 $(x+a)(x+b) = x^2+(a+b)x+ab$ を使いこなそう。", q:{t:"$(x+3)(x+2)$ を展開せよ", a:"x^2+5x+6", h:"足して5、掛けて6。"}, review:"因数分解は、掛けて後ろの数字、足して真ん中の数字になるペアを探そう。", ruidai:{t:"$(x+1)(x+4)$", a:"x^2+5x+4"} },
-                { id:'3-2', title:"平方根", visual:"<div class='visual-box'><b>【2乗の逆】</b><br>$\\\\sqrt{9}$ は「2乗して9になる正の数」だから 3 のこと。</div>", desc:"$\\\\sqrt{}$ の中身をできるだけ小さくするのが基本だよ。", q:{t:"$\\\\sqrt{36}$ は？", a:"6", h:"何を2乗したら36になる？"}, review:"$\\\\sqrt{a} \\\\times \\\\sqrt{b} = \\\\sqrt{ab}$ のルールを忘れずに。", ruidai:{t:"$\\\\sqrt{49}$", a:"7"} },
-                { id:'3-3', title:"二次方程式", visual:"<div class='visual-box'><b>【答えが2つ？】</b><br>2次方程式は、答えが2つ出てくることが多いのが特徴だよ。</div>", desc:"因数分解を使うか、最強の「解の公式」を使おう。", q:{t:"$x^2 = 25$ の解は？(半角,小さい順に , で区切る)", a:"-5,5", h:"プラスとマイナスの両方あるよ。"}, review:"$x^2=k \\\\Rightarrow x = \\\\pm \\\\sqrt{k}$ が基本の形。", ruidai:{t:"$x^2 = 16$", a:"-4,4"} },
-                { id:'3-4', title:"三平方の定理", visual:"<div class='visual-box'><b>【ピタゴラス】</b><br>直角三角形なら $a^2+b^2=c^2$ が必ず成り立つ魔法の法則！</div>", desc:"一番長い辺（斜辺）を $c$ にするのがルールだよ。", q:{t:"辺が3, 4の直角三角形の斜辺は？", a:"5", h:"$3^2+4^2 = 9+16 = 25$"}, review:"特別な直角三角形（$1:2:\\\\sqrt{3}$ など）の比も覚えると無敵！", ruidai:{t:"辺が5, 12の直角三角形の斜辺は？", a:"13"} }
+                { id:'3-1', title:"三平方の定理", visual:"<div class='visual-box'><b>ピタゴラスイメージ</b><br><br>直角三角形の辺の長さの魔法のルール！</div>", desc:"$a^2 + b^2 = c^2$。斜辺（一番長いとこ）が $c$ だよ。", q:{t:"辺が6と8の直角三角形の斜辺は？", a:"10", type:"geometry_check"}, review:"2乗の計算が速いね！その調子。", ruidai:{t:"辺が9と12の直角三角形の斜辺は？", a:"15"} }
             ]
         };
 
@@ -159,7 +168,6 @@ def ui():
 
         function openUnit(grade, id) {
             currentUnit = mathData[grade].find(u => u.id === id);
-            stats.sessionMistakes = 0;
             document.getElementById('lesson-title').innerText = currentUnit.title;
             document.getElementById('visual-content').innerHTML = currentUnit.visual;
             document.getElementById('lesson-desc').innerHTML = currentUnit.desc;
@@ -176,31 +184,48 @@ def ui():
         function checkPractice() {
             const val = document.getElementById('ans-q').value.trim();
             if (val === currentUnit.q.a) {
-                alert("✨ 正解！");
+                alert("AI判定：正解！すみれさんのロジックは正しいです。");
+                aiBrain.mastery[currentUnit.title] = (aiBrain.mastery[currentUnit.title] || 0) + 20;
                 document.getElementById('lesson-review').innerHTML = currentUnit.review;
-                document.getElementById('ruidai-body').innerHTML = `<p>${currentUnit.ruidai.t}</p><input id='ans-r' class='input-field' placeholder='類題の答え...'>`;
+                document.getElementById('ruidai-body').innerHTML = `<p>${currentUnit.ruidai.t}</p><input id='ans-r' class='input-field' placeholder='類題...'>`;
                 document.getElementById('review-section').classList.remove('hidden');
                 document.getElementById('ruidai-section').classList.remove('hidden');
                 document.getElementById('check-btn').classList.add('hidden');
-                if (window.MathJax) MathJax.typesetPromise();
             } else { 
-                stats.totalMistakes++; stats.sessionMistakes++;
-                alert(`ヒント：${currentUnit.q.h}`);
-                updateAI();
+                // AI学習プロセス
+                aiBrain.mistakeLogs[currentUnit.title] = (aiBrain.mistakeLogs[currentUnit.title] || 0) + 1;
+                updateAIInsight();
+                alert("AIヒント：少し考え方がズレているかも？左のイメージ図をもう一度見てみて。");
             }
         }
 
-        function updateAI() {
-            const msg = document.getElementById('ai-msg');
-            if (stats.totalMistakes >= 3) {
-                msg.innerHTML = `⚠️ <b>要注意:</b> 「${currentUnit.title}」でつまずきが見られます。イメージ解説をもう一度ゆっくり読んで、基礎を固めるのが近道だよ！`;
+        function updateAIInsight() {
+            const insight = document.getElementById('ai-insight');
+            const mistakes = aiBrain.mistakeLogs[currentUnit.title];
+            if (mistakes >= 2) {
+                insight.innerHTML = `🤖 <b>分析完了:</b> すみれさんは「${currentUnit.title}」の${currentUnit.q.type === 'sign_check' ? '符号のルール' : '計算の順序'}でつまずく傾向があるよ。次はここを重点的に教えるね！`;
             }
         }
 
         function checkFinal() {
             if (document.getElementById('ans-r').value.trim() === currentUnit.ruidai.a) {
-                alert("🎊 完璧！"); goHome();
-            } else { alert("あともう一歩！復習を読んでみて。"); }
+                aiBrain.mastery[currentUnit.title] = Math.min((aiBrain.mastery[currentUnit.title] || 0) + 30, 100);
+                alert("🎊 類題もクリア！習得度が上がりました！");
+                updateMasteryUI();
+                goHome();
+            } else { alert("あともう少し！"); }
+        }
+
+        function updateMasteryUI() {
+            const list = document.getElementById('mastery-list');
+            list.innerHTML = Object.entries(aiBrain.mastery).map(([title, score]) => `
+                <div style="margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between;"><span>${title}</span><span>${score}%</span></div>
+                    <div style="width:100%; height:4px; background:rgba(255,255,255,0.1); border-radius:2px; margin-top:4px;">
+                        <div style="width:${score}%; height:100%; background:var(--accent); border-radius:2px;"></div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function goHome() {
