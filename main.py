@@ -139,25 +139,39 @@ def ui():
         let selectedChoice = null;
         let currentUnit = null;
 
-        const unitData = {{
-            unit1: {{ 
+        const unitData = {
+            unit1: { 
                 title: "多項式の展開 ($x, y$)", 
                 desc: `<p>公式を $x$ と $y$ で整理しましょう。</p>
                        <div class="point-box">$$(x+a)(y+b) = xy + bx + ay + ab$$</div>
                        <div class="term-box">
                          <b style="color:var(--accent)">用語解説：定数項（ていすうこう）</b><br>
-                         式の中で、$x$ や $y$ といった文字が掛けられていない<b>「ただの数字のみ」</b>の項のことです。<br>
-                         例：$x + y + 5$ の場合、定数項は $5$ です。
+                         式の中で、$x$ や $y$ といった文字が掛けられていない<b>「ただの数字のみ」</b>の項のことです。
                        </div>`,
                 more: `<h3>文字が混ざっても基本は同じ</h3>
-                       <p>分配法則を使って、左のカッコの各項を、右のカッコの各項に順番に掛けていきます。</p>
-                       <div class="point-box">$$(x+3)(y-2) = xy - 2x + 3y - 6$$</div>
-                       <p style="font-size:13px; opacity:0.7;">この場合の定数項は $-6$ ですね。</p>`,
-                q1: {{ txt: "$(x+4)(y+2)$ を展開したとき、$x$ の係数は？", choices: [2, 4, 8, 1], ans: 2 }},
-                q2: {{ txt: "$(x-5)(y+3)$ を展開せよ。", ans: "xy+3x-5y-15" }},
-                q3: {{ txt: "$(x-2)(y-4)$ を展開したときの定数項は？", ans: 8, hint: "定数項はカッコ内の「数字（符号を含む）」どうしを掛け合わせたものです。$-2 \\times -4$ は？" }}
-            }}
-        }};
+                       <p>分配法則を使って、順番に掛けていきます。</p>
+                       <div class="point-box">$$(x+3)(y-2) = xy - 2x + 3y - 6$$</div>`,
+                q1: { txt: "$(x+4)(y+2)$ を展開したとき、$x$ の係数は？", choices: [2, 4, 8, 1], ans: 2, feedback: "展開すると $xy + 2x + 4y + 8$ となります。$x$ に掛かっている数字を見てみましょう。" },
+                q2: { txt: "$(x-5)(y+3)$ を展開せよ。", ans: "xy+3x-5y-15", feedback: "分配法則で4回掛け算をします。$-5 \times 3$ の符号に注意！" },
+                q3: { txt: "$(x-2)(y-4)$ を展開したときの定数項は？", ans: 8, hint: "定数項はカッコ内の「数字」どうしを掛けたものです。", feedback: "$-2 \times -4 = 8$ ですね。マイナス同士の掛け算はプラスになります。" }
+            },
+            // ↓ここから「1」の要望：CHAPTER 02 の追加
+            unit2: {
+                title: "因数分解の基本 ($x, y$)",
+                desc: `<p>展開の逆、共通因数でくくる技術です。</p>
+                       <div class="point-box">$$ax + ay = a(x + y)$$</div>
+                       <div class="term-box">
+                         <b style="color:var(--accent)">ポイント</b><br>
+                         すべての項に含まれている文字や数字（共通因数）を見つけ出すのがコツです。
+                       </div>`,
+                more: `<h3>複雑な式の因数分解</h3>
+                       <p>複数の文字があっても、共通するものを見つければ簡単です。</p>
+                       <div class="point-box">$$3xy - 6x = 3x(y - 2)$$</div>`,
+                q1: { txt: "$5xy + 10x$ を因数分解したとき、カッコの外に出る共通因数は？", choices: ["5x", "5", "x", "10x"], ans: "5x", feedback: "5と10はどちらも5で割れ、どちらの項にもxが含まれています。" },
+                q2: { txt: "$xy + 2x - 3y - 6$ を因数分解せよ。", ans: "(x-3)(y+2)", feedback: "前の2つ $x(y+2)$ と後ろの2つ $-3(y+2)$ で分けると共通の $(y+2)$ が見つかります。" },
+                q3: { txt: "$2xy - 4y$ を因数分解した際のカッコ内は？ (共通因数 $2y$ を出した場合)", ans: "x-2", hint: "各項を $2y$ で割ってみましょう。", feedback: "$2xy \div 2y = x$、$-4y \div 2y = -2$ です。" }
+            }
+        };
 
         function refreshMath() {{
             if (window.MathJax && window.MathJax.typesetPromise) {{
@@ -229,20 +243,45 @@ def ui():
             h.style.display = (h.style.display === 'block') ? 'none' : 'block';
         }}
 
-        function judgeScore() {{
-            let score = 0;
-            const a2 = document.getElementById('ans2').value.replace(/\\\\s/g, "");
-            if(selectedChoice === currentUnit.q1.ans) score += 40;
-            if(a2 === currentUnit.q2.ans) score += 40;
-            if(parseInt(document.getElementById('ans3').value) === currentUnit.q3.ans) score += 20;
+        function toggleHint() {
+            const h = document.getElementById('hint-text');
+            h.style.display = (h.style.display === 'block') ? 'none' : 'block';
+        }
 
-            if(score >= 80) {{
+        function judgeScore() {
+            let score = 0;
+            let feedbackMsg = "";
+            const a2 = document.getElementById('ans2').value.replace(/\s/g, "");
+            const a3 = parseInt(document.getElementById('ans3').value);
+
+            // Q1判定
+            if(selectedChoice === currentUnit.q1.ans) {
+                score += 40;
+            } else {
+                feedbackMsg += "【問1のヒント】" + (currentUnit.q1.feedback || "") + "\\n";
+            }
+
+            // Q2判定
+            if(a2 === currentUnit.q2.ans) {
+                score += 40;
+            } else {
+                feedbackMsg += "【問2のヒント】" + (currentUnit.q2.feedback || "") + "\\n";
+            }
+
+            // Q3判定
+            if(a3 === currentUnit.q3.ans) {
+                score += 20;
+            } else {
+                feedbackMsg += "【問3のヒント】" + (currentUnit.q3.feedback || "") + "\\n";
+            }
+
+            if(score >= 80) {
                 alert("素晴らしい！理解度スコア: " + score + "%\\n単元をマスターしました！");
                 goHome();
-            }} else {{
-                alert("スコア: " + score + "%\\n80%以上で合格です。教科書をもう一度見直しましょう！");
-            }}
-        }}
+            } else {
+                alert("スコア: " + score + "%\\n80%以上で合格です。\\n\\n" + feedbackMsg);
+            }
+        }
 
         function goHome() {{
             document.querySelectorAll('.layer').forEach(l => l.classList.remove('show'));
