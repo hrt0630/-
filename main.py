@@ -6,13 +6,12 @@ app = FastAPI()
 
 @app.get("/ui", response_class=HTMLResponse)
 def ui():
-    # 修正ポイント: 文字列をしっかり最後まで閉じ、returnを追加しました
     html_content = """
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>理解保証AI型授業 - Premium Edition</title>
+    <title>数学マスターシステム - すみれEdition</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script>
         window.MathJax = {
@@ -22,72 +21,57 @@ def ui():
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        :root { 
-            --accent: #00d2ff; 
-            --accent-glow: rgba(0, 210, 255, 0.3);
-            --border: rgba(255, 255, 255, 0.1); 
-            --panel-bg: rgba(255, 255, 255, 0.05);
-        }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; background: #010208; font-family: "Hiragino Sans", "Meiryo", sans-serif; color: white; overflow: hidden; }
+        :root { --accent: #00d2ff; --border: rgba(255, 255, 255, 0.1); --panel-bg: rgba(255, 255, 255, 0.05); }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; background: #010208; font-family: "Hiragino Sans", sans-serif; color: white; overflow: hidden; }
         .liquid-bg { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at 50% 50%, #0a1128 0%, #000 100%); }
         
-        #login-screen { position: fixed; inset: 0; z-index: 5000; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); transition: 0.8s; }
-        .login-glass { background: var(--panel-bg); padding: 40px; border-radius: 30px; border: 1px solid var(--border); width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        .scene { display: flex; gap: 20px; width: 90%; max-width: 1100px; height: 85vh; opacity: 0; transform: translateY(20px); transition: 1s cubic-bezier(0.22, 1, 0.36, 1); }
-        .scene.active { opacity: 1; transform: translateY(0); }
-        
-        .page-panel { flex: 1; background: var(--panel-bg); border: 1px solid var(--border); backdrop-filter: blur(30px); padding: 35px; display: flex; flex-direction: column; overflow-y: auto; border-radius: 24px; position: relative; scrollbar-width: none; }
+        .scene { display: flex; gap: 20px; width: 95%; max-width: 1200px; height: 90vh; }
+        .page-panel { flex: 1; background: var(--panel-bg); border: 1px solid var(--border); backdrop-filter: blur(30px); padding: 30px; display: flex; flex-direction: column; overflow-y: auto; border-radius: 20px; scrollbar-width: none; }
         .page-panel::-webkit-scrollbar { display: none; }
-
-        .grade-nav { display: flex; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 15px; margin-bottom: 25px; border: 1px solid var(--border); }
-        .grade-btn { flex: 1; border: none; background: transparent; color: rgba(255,255,255,0.5); padding: 12px; cursor: pointer; border-radius: 10px; font-weight: bold; transition: 0.3s; }
-        .grade-btn.active { background: var(--accent); color: #000; box-shadow: 0 4px 15px var(--accent-glow); }
-
-        .unit-card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 18px; margin-bottom: 12px; cursor: pointer; border: 1px solid var(--border); transition: 0.3s; position: relative; overflow: hidden; }
-        .unit-card:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); transform: translateX(5px); }
-        .unit-card::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--accent); opacity: 0; transition: 0.3s; }
-        .unit-card:hover::before { opacity: 1; }
-
-        .layer { display: none; animation: fadeIn 0.5s ease forwards; }
-        .layer.show { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .point-box { background: rgba(0, 210, 255, 0.05); border-radius: 15px; padding: 20px; margin: 20px 0; border-left: 5px solid var(--accent); }
-        .example-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px dashed var(--border); margin: 10px 0; font-size: 0.95em; }
         
-        .btn-primary { width: 100%; padding: 18px; border-radius: 15px; background: #fff; color: #000; font-weight: 900; border: none; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        .grade-nav { display: flex; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 12px; margin-bottom: 20px; }
+        .grade-btn { flex: 1; border: none; background: transparent; color: rgba(255,255,255,0.5); padding: 10px; cursor: pointer; border-radius: 8px; font-weight: bold; }
+        .grade-btn.active { background: var(--accent); color: #000; }
+
+        .unit-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border: 1px solid var(--border); transition: 0.3s; }
+        .unit-card:hover { border-color: var(--accent); background: rgba(255,255,255,0.08); }
+
+        .section-title { color: var(--accent); border-bottom: 1px solid var(--accent); margin: 20px 0 10px; padding-bottom: 5px; font-size: 1.1em; font-weight: bold; }
+        .point-box { background: rgba(0, 210, 255, 0.05); border-left: 4px solid var(--accent); padding: 15px; margin: 10px 0; border-radius: 0 10px 10px 0; }
+        .review-box { background: rgba(247, 183, 49, 0.05); border-left: 4px solid #f7b731; padding: 15px; margin: 20px 0; border-radius: 0 10px 10px 0; color: #f7b731; }
+        
+        .input-field { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff; margin-top: 5px; box-sizing: border-box; outline: none; }
+        .input-field:focus { border-color: var(--accent); }
+        .btn-primary { width: 100%; padding: 15px; border-radius: 10px; background: #fff; color: #000; font-weight: bold; border: none; cursor: pointer; margin-top: 20px; transition: 0.3s; }
         .btn-primary:hover { background: var(--accent); transform: scale(1.02); }
         
-        .input-field { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff; margin-bottom: 10px; box-sizing: border-box; outline: none; }
-        .input-field:focus { border-color: var(--accent); }
-
-        #hint-area { display: none; margin-top: 20px; padding: 20px; background: rgba(247, 183, 49, 0.1); border-radius: 15px; border: 1px solid rgba(247, 183, 49, 0.2); color: #f7b731; line-height: 1.6; }
+        .layer { display: none; } .layer.show { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="liquid-bg"></div>
-    <div id="login-screen">
-        <div class="login-glass">
-            <h2>AI Study Link</h2>
-            <p style="font-size: 0.9em; opacity: 0.6;">すみれさんの専用学習ルーム</p>
-            <input type="email" class="input-field" placeholder="Email">
-            <input type="password" class="input-field" placeholder="Password">
-            <button class="btn-primary" onclick="launch()">学習を始める</button>
-        </div>
-    </div>
-
-    <div class="scene" id="scene">
+    <div class="scene">
         <div class="page-panel">
             <div id="left-home" class="layer show">
-                <span style="color:var(--accent); font-weight:bold; letter-spacing:3px;">DASHBOARD</span>
-                <h1 style="font-size:2.5em; margin: 10px 0;">こんにちは！</h1>
-                <p style="line-height:1.8; opacity:0.7;">右側のリストから学びたい単元を選んでください。<br>学年ごとに整理されています。</p>
+                <h1 style="font-size: 2.5em;">Study System</h1>
+                <p style="opacity: 0.7;">右のリストから単元を選んでください。<br>解説、例題、演習、復習、類題のサイクルで完璧にします。</p>
             </div>
-            <div id="left-lesson" class="layer">
-                <button onclick="goHome()" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-bottom:20px;">← 戻る</button>
-                <h2 id="lesson-title" style="font-size:1.8em; color:var(--accent);"></h2>
-                <div id="lesson-body"></div>
+            <div id="left-content" class="layer">
+                <button onclick="goHome()" style="background:none; border:none; color:var(--accent); cursor:pointer; font-weight:bold;">← 戻る</button>
+                <h2 id="display-title" style="font-size: 1.8em; margin: 10px 0;"></h2>
+                
+                <div class="section-title">📘 教科書の解説・図形</div>
+                <div id="display-desc"></div>
+
+                <div class="section-title">💡 例題</div>
+                <div id="display-example"></div>
+
+                <div id="review-section" class="hidden">
+                    <div class="section-title">🔄 復習ポイント</div>
+                    <div id="display-review" class="review-box"></div>
+                </div>
             </div>
         </div>
 
@@ -98,13 +82,18 @@ def ui():
                     <button class="grade-btn" onclick="setGrade(2)">中2</button>
                     <button class="grade-btn" onclick="setGrade(3)">中3</button>
                 </div>
-                <div id="unit-container"></div>
+                <div id="unit-list"></div>
             </div>
             <div id="right-practice" class="layer">
-                <div id="practice-head"></div>
-                <div id="practice-body"></div>
-                <button class="btn-primary" onclick="checkAnswers()">結果を判定する</button>
-                <div id="hint-area"></div>
+                <div class="section-title">✍️ 演習問題</div>
+                <div id="display-q"></div>
+                <button id="check-btn" class="btn-primary" onclick="checkPractice()">演習を採点する</button>
+
+                <div id="ruidai-section" class="hidden">
+                    <div class="section-title">🔥 仕上げの類題</div>
+                    <div id="display-ruidai"></div>
+                    <button class="btn-primary" onclick="checkFinal()">最終チェック完了</button>
+                </div>
             </div>
         </div>
     </div>
@@ -113,88 +102,82 @@ def ui():
         let currentUnit = null;
         const mathData = {
             1: [
-                { id: '1-1', title: "正の数・負の数", desc: "<div class='point-box'>$(-3) \\\\times (-2) = +6$</div><p>符号のルールを覚えよう！</p>", examples: "<div class='example-box'><b>例題:</b> $(-5) + (+2) = -3$</div>", q: [ {t:"$(-10) \\\\div 2$", a:"-5", h:"マイナスとプラスの割り算はマイナス！"}, {t:"$(-4)^2$", a:"16", h:"$(-4) \\\\times (-4)$ です。"} ] },
-                { id: '1-2', title: "文字の式", desc: "<div class='point-box'>$a \\\\times b = ab$</div><p>掛け算の記号を省くのがルール！</p>", examples: "<div class='example-box'><b>例題:</b> $x \\\\times (-3) = -3x$</div>", q: [ {t:"$x+x+x$", a:"3x", h:"同じ文字を足すと係数が増えます。"}, {t:"$5a - 2a$", a:"3a", h:"文字の部分はそのままで数字を計算。"} ] }
+                { title: "正の数・負の数", desc: "<div class='point-box'>0より小さい数を負の数と呼びます。</div>
+
+[Image of a number line with positive and negative numbers]
+", example: "$-5 + 3 = -2$<br>絶対値が大きい方の符号を使いましょう。", q: { t: "$(-8) + 2$", a: "-6" }, review: "符号のミスはありませんでしたか？絶対値の引き算を忘れずに！", ruidai: { t: "$(-12) + 5$", a: "-7" } },
+                { title: "文字の式", desc: "<div class='point-box'>$a \\\\times b = ab$ のように記号を省略します。</div>", example: "$x+x+x = 3x$", q: { t: "$5a - 2a$", a: "3a" }, review: "文字が同じもの同士だけ足し引きできます。", ruidai: { t: "$x + 4x$", a: "5x" } },
+                { title: "方程式", desc: "<div class='point-box'>＝をまたいで移動することを「移項」といいます。</div>", example: "$x + 5 = 8 \\\\Rightarrow x = 8 - 5 = 3$", q: { t: "$x - 4 = 6$", a: "10" }, review: "移項すると符号が逆転（＋がー）することを再確認しましょう。", ruidai: { t: "$x + 7 = 2$", a: "-5" } },
+                { title: "比例と反比例", desc: "<div class='point-box'>$y = ax$ (比例) , $y = a/x$ (反比例)</div>", example: "$y=2x$ で $x=3$ なら $y=6$", q: { t: "$y=3x$ で $x=4$ のときの $y$", a: "12" }, review: "比例は一方が増えるともう一方も一定の割合で増えます。", ruidai: { t: "$y=5x$ で $x=2$ のときの $y$", a: "10" } }
             ],
             2: [
-                { id: '2-1', title: "式の計算", desc: "<div class='point-box'>$2(a + 3b) = 2a + 6b$</div><p>分配法則でカッコを外そう。</p>", examples: "<div class='example-box'><b>例題:</b> $4x - (x - 2y) = 3x + 2y$</div>", q: [ {t:"$3a+5b-a$", a:"2a+5b", h:"a同士をまとめましょう。"}, {t:"$(-2x) \\\\times 4y$", a:"-8xy", h:"数字は数字、文字は文字で。"} ] }
+                { title: "式の計算", desc: "<div class='point-box'>かっこを外すときは分配法則！</div>", example: "$2(a + 3b) = 2a + 6b$", q: { t: "$3(2x + y)$", a: "6x+3y" }, review: "かっこの中の全ての項に数字を掛けるのがポイントです。", ruidai: { t: "$4(a - 2b)$", a: "4a-8b" } },
+                { title: "連立方程式", desc: "<div class='point-box'>2つの方程式から1つの文字を消します。</div>", example: "$x+y=5, x-y=1$ を足すと $2x=6$", q: { t: "$x+y=3, x-y=1$ の $x$", a: "2" }, review: "加減法で消えないときは、片方の式を数倍してみましょう。", ruidai: { t: "$x+y=10, x-y=4$ の $x$", a: "7" } },
+                { title: "一次関数", desc: "<div class='point-box'>$y = ax + b$</div>", example: "傾きが3、切片が2なら $y=3x+2$", q: { t: "傾き2、切片-5の式は？", a: "y=2x-5" }, review: "傾き $a$ は変化の割合とも呼ばれます。", ruidai: { t: "傾き-1、切片4の式は？", a: "y=-x+4" } },
+                { title: "図形の性質", desc: "<div class='point-box'>三角形の内角の和は180度。</div>", example: "2つの角が50度の時の残り1つは $180-100=80$", q: { t: "角が60度、70度の三角形の残りの角は？", a: "50" }, review: "外角の性質（隣り合わない2つの内角の和）も便利ですよ！", ruidai: { t: "直角三角形で1つの角が30度の時の、もう一つの鋭角は？", a: "60" } }
             ],
             3: [
-                { id: '3-1', title: "多項式の展開", desc: "<div class='point-box'>$$(x+a)(y+b) = xy + bx + ay + ab$$</div>", examples: "<div class='example-box'><b>例題:</b> $(x+2)(y+3) = xy+3x+2y+6$</div>", q: [ {t:"$(x+1)(y+5)$ の定数項は？", a:"5", h:"$1 \\\\times 5$ の部分です。"}, {t:"$(x-2)(y+4)$ を展開せよ", a:"xy+4x-2y-8", h:"4回順番に掛け算です。"} ] },
-                { id: '3-2', title: "因数分解", desc: "<div class='point-box'>$$ax + ay = a(x + y)$$</div>", examples: "<div class='example-box'><b>例題:</b> $4xy + 8x = 4x(y + 2)$</div>", q: [ {t:"$3ax + 6ay$ の共通因数は？", a:"3a", h:"3とaがどちらにもあります。"}, {t:"$x^2 + 2x$ を因数分解せよ", a:"x(x+2)", h:"xを外に出しましょう。"} ] }
+                { title: "多項式の展開", desc: "<div class='point-box'>公式: $(x+a)(x+b) = x^2+(a+b)x+ab$</div>", example: "$(x+2)(x+3) = x^2+5x+6$", q: { t: "$(x+1)(x+4)$ を展開せよ", a: "x^2+5x+4" }, review: "真ん中の項は「足し算」、後ろの項は「掛け算」です。", ruidai: { t: "$(x+2)(x+5)$", a: "x^2+7x+10" } },
+                { title: "因数分解", desc: "<div class='point-box'>展開の逆！掛け算の形に戻します。</div>", example: "$x^2+5x+6 = (x+2)(x+3)$", q: { t: "$x^2+3x+2$ を因数分解せよ", a: "(x+1)(x+2)" }, review: "まずは共通因数（同じ文字や数字）がないか探すのが鉄則です。", ruidai: { t: "$x^2+7x+12$", a: "(x+3)(x+4)" } },
+                { title: "平方根", desc: "<div class='point-box'>2乗して$a$になる数を、$a$の平方根といいます。</div>", example: "$\\\\sqrt{12} = 2\\\\sqrt{3}$", q: { t: "$\\\\sqrt{2} \\\\times \\\\sqrt{8}$", a: "4" }, review: "$\\\\sqrt{a} \\\\times \\\\sqrt{a} = a$ になる性質を使いましょう。", ruidai: { t: "$\\\\sqrt{3} \\\\times \\\\sqrt{12}$", a: "6" } },
+                { title: "三平方の定理", desc: "<div class='point-box'>$a^2 + b^2 = c^2$</div>", example: "3cm, 4cm の辺の斜辺は $\\\\sqrt{9+16}=5$", q: { t: "辺が5と12の直角三角形の斜辺は？", a: "13" }, review: "必ず一番長い「斜辺」を $c$ に置いて計算してくださいね。", ruidai: { t: "辺が6と8の直角三角形の斜辺は？", a: "10" } }
             ]
         };
 
-        function launch() { 
-            document.getElementById('login-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('scene').classList.add('active');
-                setGrade(1);
-            }, 800);
-        }
-
         function setGrade(g) {
             document.querySelectorAll('.grade-btn').forEach((b, i) => b.classList.toggle('active', i+1 === g));
-            const container = document.getElementById('unit-container');
-            container.innerHTML = mathData[g].map(u => `
-                <div class="unit-card" onclick="openUnit('${g}', '${u.id}')">
-                    <div style="font-size:0.8em; opacity:0.5;">Unit ${u.id}</div>
-                    <div style="font-weight:bold; margin-top:5px;">${u.title}</div>
-                </div>
-            `).join('');
+            const list = document.getElementById('unit-list');
+            list.innerHTML = mathData[g].map((u, i) => `<div class="unit-card" onclick="startUnit(${g}, ${i})">${u.title}</div>`).join('');
         }
 
-        function openUnit(grade, id) {
-            currentUnit = mathData[grade].find(u => u.id === id);
-            document.getElementById('lesson-title').innerText = currentUnit.title;
-            document.getElementById('lesson-body').innerHTML = currentUnit.desc + currentUnit.examples;
+        function startUnit(g, i) {
+            currentUnit = mathData[g][i];
+            document.getElementById('display-title').innerText = currentUnit.title;
+            document.getElementById('display-desc').innerHTML = currentUnit.desc;
+            document.getElementById('display-example').innerHTML = currentUnit.example;
+            document.getElementById('display-q').innerHTML = `<p>${currentUnit.q.t}</p><input id='ans-q' class='input-field' placeholder='答えを入力...'>`;
             
-            document.getElementById('practice-head').innerHTML = `<h3 style="color:var(--accent);">演習問題</h3>`;
-            document.getElementById('practice-body').innerHTML = currentUnit.q.map((question, i) => `
-                <div class="q-card">
-                    <p><b>Q${i+1}:</b> ${question.t}</p>
-                    <input type="text" class="input-field" id="q-ans-${i}" placeholder="答えを入力...">
-                </div>
-            `).join('');
+            document.getElementById('review-section').classList.add('hidden');
+            document.getElementById('ruidai-section').classList.add('hidden');
+            document.getElementById('check-btn').classList.remove('hidden');
 
             document.querySelectorAll('.layer').forEach(l => l.classList.remove('show'));
-            document.getElementById('left-lesson').classList.add('show');
+            document.getElementById('left-content').classList.add('show');
             document.getElementById('right-practice').classList.add('show');
-            document.getElementById('hint-area').style.display = 'none';
-            if (window.MathJax) MathJax.typesetPromise();
+            if(window.MathJax) MathJax.typesetPromise();
         }
 
-        function checkAnswers() {
-            let correctCount = 0;
-            let feedback = "";
-            currentUnit.q.forEach((question, i) => {
-                const val = document.getElementById(`q-ans-${i}`).value.trim();
-                if (val === question.a) correctCount++;
-                else feedback += `<b>Q${i+1}のヒント:</b> ${question.h}<br>`;
-            });
+        function checkPractice() {
+            const ans = document.getElementById('ans-q').value.trim();
+            if (ans === currentUnit.q.a) {
+                alert("✨ 正解！復習ポイントと類題が表示されました。");
+                document.getElementById('display-review').innerHTML = currentUnit.review;
+                document.getElementById('display-ruidai').innerHTML = `<p>${currentUnit.ruidai.t}</p><input id='ans-r' class='input-field' placeholder='仕上げの答え...'>`;
+                document.getElementById('review-section').classList.remove('hidden');
+                document.getElementById('ruidai-section').classList.remove('hidden');
+                document.getElementById('check-btn').classList.add('hidden');
+                if(window.MathJax) MathJax.typesetPromise();
+            } else { alert("おっと、もう一度解いてみよう！"); }
+        }
 
-            if (correctCount === currentUnit.q.length) {
-                alert("✨ Perfect! すみれさん、全問正解です！");
-                goHome();
-            } else {
-                const ha = document.getElementById('hint-area');
-                ha.innerHTML = feedback;
-                ha.style.display = 'block';
-            }
+        function checkFinal() {
+            const ans = document.getElementById('ans-r').value.trim();
+            if (ans === currentUnit.ruidai.a) {
+                alert("🎊 完璧です！この単元はもう大丈夫ですね。"); goHome();
+            } else { alert("あともう少し！復習ポイントを読み直してみて。"); }
         }
 
         function goHome() {
             document.querySelectorAll('.layer').forEach(l => l.classList.remove('show'));
             document.getElementById('left-home').classList.add('show');
             document.getElementById('right-list').classList.add('show');
-            if (window.MathJax) MathJax.typesetPromise();
         }
+
+        setGrade(1);
     </script>
 </body>
 </html>
 """
-    # 修正ポイント: returnを追加しました
     return HTMLResponse(content=html_content)
 
 if __name__ == "__main__":
