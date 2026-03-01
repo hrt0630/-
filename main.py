@@ -6,7 +6,9 @@ app = FastAPI()
 
 @app.get("/ui", response_class=HTMLResponse)
 def ui():
-    # MathJaxが確実に数式を変換するようにスクリプトを強化しました
+    # 1. 数式表示(MathJax)の設定を強化
+    # 2. 詳しい解説(right-more)を復活
+    # 3. 今の演習機能やデザインはすべて維持
     html_content = """
 <!DOCTYPE html>
 <html lang="ja">
@@ -86,6 +88,11 @@ def ui():
                 <div class="index-item" onclick="loadUnit('unit1')">01 多項式の展開</div>
                 <div class="index-item" onclick="loadUnit('unit2')">02 因数分解の基本</div>
             </div>
+            <div id="right-more" class="layer">
+                <h3 style="color: var(--accent);">さらに詳しく解説</h3>
+                <div id="unit-more-desc"></div>
+                <button class="btn-action" onclick="showExercise()">演習問題に進む</button>
+            </div>
             <div id="right-exercise" class="layer">
                 <div id="exercise-flow"></div>
                 <button class="btn-action" onclick="judgeScore()">採点する</button>
@@ -102,17 +109,19 @@ def ui():
         const unitData = {
             unit1: { 
                 title: "多項式の展開", 
-                desc: "<div class='point-box'>$$(x+a)(y+b) = xy + bx + ay + ab$$</div>",
-                q1: { txt: "$(x+4)(y+2)$ の $x$ の係数は？", choices: [2, 4, 8], ans: "2", feedback: "展開すると $2x$ が出てきます。" },
+                desc: "<div class='point-box'>$$(x+a)(y+b) = xy + bx + ay + ab$$</div><p>順番に掛けていく「分配法則」が基本です。</p>",
+                more: "<h4>文字が混ざっても基本は同じ</h4><p>$(x+3)(y-2)$ のような場合も、xをyと-2に、3をyと-2に順番に掛け算します。</p><div class='point-box'>$$(x+3)(y-2) = xy - 2x + 3y - 6$$</div>",
+                q1: { txt: "$(x+4)(y+2)$ の $x$ の係数は？", choices: [2, 4, 8], ans: "2", feedback: "展開すると $xy + 2x + 4y + 8$ です。$x$ の前は 2 です。" },
                 q2: { txt: "$(x-5)(y+3)$ を展開せよ", ans: "xy+3x-5y-15", feedback: "$-5 \\times 3 = -15$ に注意！" },
                 q3: { txt: "$(x-2)(y-4)$ の定数項は？", ans: "8", feedback: "$-2 \\times -4 = 8$ です。" }
             },
             unit2: {
                 title: "因数分解の基本",
-                desc: "<div class='point-box'>$$ax + ay = a(x + y)$$</div>",
+                desc: "<div class='point-box'>$$ax + ay = a(x + y)$$</div><p>共通する文字や数字を見つけて外に出します。</p>",
+                more: "<h4>共通因数を見つけるコツ</h4><p>$3xy - 6x$ なら、3と6の両方を割れる「3」と、両方にある「x」が共通因数です。</p><div class='point-box'>$$3xy - 6x = 3x(y - 2)$$</div>",
                 q1: { txt: "$5xy + 10x$ の共通因数は？", choices: ["5x", "5", "x"], ans: "5x", feedback: "5とxが共通しています。" },
                 q2: { txt: "$xy + 2x - 3y - 6$ を因数分解せよ", ans: "(x-3)(y+2)", feedback: "共通の(y+2)を作ります。" },
-                q3: { txt: "$2xy - 4y$ の共通因数 2y を出したカッコ内は？", ans: "x-2", feedback: "2y(x-2) になります。" }
+                q3: { txt: "$2xy - 4y$ を因数分解したカッコ内は？", ans: "x-2", feedback: "2y(x-2) になります。" }
             }
         };
 
@@ -133,18 +142,23 @@ def ui():
             selectedChoice = null;
             document.getElementById('unit-title-display').innerText = currentUnit.title;
             document.getElementById('unit-description').innerHTML = currentUnit.desc;
+            document.getElementById('unit-more-desc').innerHTML = currentUnit.more;
             
+            document.querySelectorAll('.layer').forEach(l => l.classList.remove('show'));
+            document.getElementById('left-content').classList.add('show');
+            document.getElementById('right-more').classList.add('show');
+            refreshMath();
+        }
+
+        function showExercise() {
             document.getElementById('exercise-flow').innerHTML = `
                 <div class='q-card'><b>問1: </b>${currentUnit.q1.txt}<br>
                 ${currentUnit.q1.choices.map(c => `<button class='choice-btn' onclick='selectC(this, "${c}")'>${c}</button>`).join('')}</div>
                 <div class='q-card'><b>問2: </b>${currentUnit.q2.txt}<br><input id='ans2' class='login-input'></div>
                 <div class='q-card'><b>問3: </b>${currentUnit.q3.txt}<br><input id='ans3' class='login-input'></div>
             `;
-
-            document.querySelectorAll('.layer').forEach(l => l.classList.remove('show'));
-            document.getElementById('left-content').classList.add('show');
+            document.getElementById('right-more').classList.remove('show');
             document.getElementById('right-exercise').classList.add('show');
-            document.getElementById('hint-display').style.display = 'none';
             refreshMath();
         }
 
@@ -177,6 +191,7 @@ def ui():
             document.querySelectorAll('.layer').forEach(l => l.classList.remove('show'));
             document.getElementById('left-default').classList.add('show');
             document.getElementById('right-default').classList.add('show');
+            refreshMath();
         }
     </script>
 </body>
