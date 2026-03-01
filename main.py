@@ -6,6 +6,7 @@ app = FastAPI()
 
 @app.get("/ui", response_class=HTMLResponse)
 def ui():
+    # 修正ポイント: 文字列をしっかり最後まで閉じ、returnを追加しました
     html_content = """
 <!DOCTYPE html>
 <html lang="ja">
@@ -30,29 +31,24 @@ def ui():
         body, html { margin: 0; padding: 0; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; background: #010208; font-family: "Hiragino Sans", "Meiryo", sans-serif; color: white; overflow: hidden; }
         .liquid-bg { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at 50% 50%, #0a1128 0%, #000 100%); }
         
-        /* ログイン画面 */
         #login-screen { position: fixed; inset: 0; z-index: 5000; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); transition: 0.8s; }
         .login-glass { background: var(--panel-bg); padding: 40px; border-radius: 30px; border: 1px solid var(--border); width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        /* メインシーン */
         .scene { display: flex; gap: 20px; width: 90%; max-width: 1100px; height: 85vh; opacity: 0; transform: translateY(20px); transition: 1s cubic-bezier(0.22, 1, 0.36, 1); }
         .scene.active { opacity: 1; transform: translateY(0); }
         
         .page-panel { flex: 1; background: var(--panel-bg); border: 1px solid var(--border); backdrop-filter: blur(30px); padding: 35px; display: flex; flex-direction: column; overflow-y: auto; border-radius: 24px; position: relative; scrollbar-width: none; }
         .page-panel::-webkit-scrollbar { display: none; }
 
-        /* 学年セレクター（浮遊感） */
         .grade-nav { display: flex; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 15px; margin-bottom: 25px; border: 1px solid var(--border); }
         .grade-btn { flex: 1; border: none; background: transparent; color: rgba(255,255,255,0.5); padding: 12px; cursor: pointer; border-radius: 10px; font-weight: bold; transition: 0.3s; }
         .grade-btn.active { background: var(--accent); color: #000; box-shadow: 0 4px 15px var(--accent-glow); }
 
-        /* 単元アイテム */
         .unit-card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 18px; margin-bottom: 12px; cursor: pointer; border: 1px solid var(--border); transition: 0.3s; position: relative; overflow: hidden; }
         .unit-card:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); transform: translateX(5px); }
         .unit-card::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--accent); opacity: 0; transition: 0.3s; }
         .unit-card:hover::before { opacity: 1; }
 
-        /* コンテンツ表示 */
         .layer { display: none; animation: fadeIn 0.5s ease forwards; }
         .layer.show { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -117,14 +113,14 @@ def ui():
         let currentUnit = null;
         const mathData = {
             1: [
-                { id: '1-1', title: "正の数・負の数", desc: "<div class='point-box'>$(-3) \\times (-2) = +6$</div><p>符号のルールを覚えよう！</p>", examples: "<div class='example-box'><b>例題:</b> $(-5) + (+2) = -3$</div>", q: [ {t:"$(-10) \\div 2$", a:"-5", h:"マイナスとプラスの割り算はマイナス！"}, {t:"$(-4)^2$", a:"16", h:"$(-4) \\times (-4)$ です。"} ] },
-                { id: '1-2', title: "文字の式", desc: "<div class='point-box'>$a \\times b = ab$</div><p>掛け算の記号を省くのがルール！</p>", examples: "<div class='example-box'><b>例題:</b> $x \\times (-3) = -3x$</div>", q: [ {t:"$x+x+x$", a:"3x", h:"同じ文字を足すと係数が増えます。"}, {t:"$5a - 2a$", a:"3a", h:"文字の部分はそのままで数字を計算。"} ] }
+                { id: '1-1', title: "正の数・負の数", desc: "<div class='point-box'>$(-3) \\\\times (-2) = +6$</div><p>符号のルールを覚えよう！</p>", examples: "<div class='example-box'><b>例題:</b> $(-5) + (+2) = -3$</div>", q: [ {t:"$(-10) \\\\div 2$", a:"-5", h:"マイナスとプラスの割り算はマイナス！"}, {t:"$(-4)^2$", a:"16", h:"$(-4) \\\\times (-4)$ です。"} ] },
+                { id: '1-2', title: "文字の式", desc: "<div class='point-box'>$a \\\\times b = ab$</div><p>掛け算の記号を省くのがルール！</p>", examples: "<div class='example-box'><b>例題:</b> $x \\\\times (-3) = -3x$</div>", q: [ {t:"$x+x+x$", a:"3x", h:"同じ文字を足すと係数が増えます。"}, {t:"$5a - 2a$", a:"3a", h:"文字の部分はそのままで数字を計算。"} ] }
             ],
             2: [
-                { id: '2-1', title: "式の計算", desc: "<div class='point-box'>$2(a + 3b) = 2a + 6b$</div><p>分配法則でカッコを外そう。</p>", examples: "<div class='example-box'><b>例題:</b> $4x - (x - 2y) = 3x + 2y$</div>", q: [ {t:"$3a+5b-a$", a:"2a+5b", h:"a同士をまとめましょう。"}, {t:"$(-2x) \\times 4y$", a:"-8xy", h:"数字は数字、文字は文字で。"} ] }
+                { id: '2-1', title: "式の計算", desc: "<div class='point-box'>$2(a + 3b) = 2a + 6b$</div><p>分配法則でカッコを外そう。</p>", examples: "<div class='example-box'><b>例題:</b> $4x - (x - 2y) = 3x + 2y$</div>", q: [ {t:"$3a+5b-a$", a:"2a+5b", h:"a同士をまとめましょう。"}, {t:"$(-2x) \\\\times 4y$", a:"-8xy", h:"数字は数字、文字は文字で。"} ] }
             ],
             3: [
-                { id: '3-1', title: "多項式の展開", desc: "<div class='point-box'>$$(x+a)(y+b) = xy + bx + ay + ab$$</div>", examples: "<div class='example-box'><b>例題:</b> $(x+2)(y+3) = xy+3x+2y+6$</div>", q: [ {t:"$(x+1)(y+5)$ の定数項は？", a:"5", h:"$1 \\times 5$ の部分です。"}, {t:"$(x-2)(y+4)$ を展開せよ", a:"xy+4x-2y-8", h:"4回順番に掛け算です。"} ] },
+                { id: '3-1', title: "多項式の展開", desc: "<div class='point-box'>$$(x+a)(y+b) = xy + bx + ay + ab$$</div>", examples: "<div class='example-box'><b>例題:</b> $(x+2)(y+3) = xy+3x+2y+6$</div>", q: [ {t:"$(x+1)(y+5)$ の定数項は？", a:"5", h:"$1 \\\\times 5$ の部分です。"}, {t:"$(x-2)(y+4)$ を展開せよ", a:"xy+4x-2y-8", h:"4回順番に掛け算です。"} ] },
                 { id: '3-2', title: "因数分解", desc: "<div class='point-box'>$$ax + ay = a(x + y)$$</div>", examples: "<div class='example-box'><b>例題:</b> $4xy + 8x = 4x(y + 2)$</div>", q: [ {t:"$3ax + 6ay$ の共通因数は？", a:"3a", h:"3とaがどちらにもあります。"}, {t:"$x^2 + 2x$ を因数分解せよ", a:"x(x+2)", h:"xを外に出しましょう。"} ] }
             ]
         };
@@ -197,3 +193,11 @@ def ui():
     </script>
 </body>
 </html>
+"""
+    # 修正ポイント: returnを追加しました
+    return HTMLResponse(content=html_content)
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 10000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
