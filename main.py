@@ -77,7 +77,7 @@ def ui():
     <div class="scene" id="scene">
         <div class="page-panel">
             <div id="left-home" class="layer show">
-                <h1 style="font-size:2.5em; margin: 0;">Hi, すみれ!</h1>
+                <h1 style="font-size:2.5em; margin: 0;">理解保証AI型授業</h1>
                 <p style="opacity:0.7;">今日の学習状況をAIが分析しています。</p>
                 
                 <div class="ai-box">
